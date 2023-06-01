@@ -1,27 +1,21 @@
 from enum import Enum
 import os, re, cv2, csv
-import pandas as pd
 import numpy as np
 from datetime import datetime
 from tqdm import tqdm
 
 from keras.utils import img_to_array
 import matplotlib.pyplot as plt
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import make_scorer
 from sklearn.model_selection import train_test_split
 
-# from skimage.metrics import structural_similarity as ssim
-from skimage import io, metrics, color
-from PIL import ImageOps, Image
+from skimage import io, metrics
 import tensorflow as tf
-from tensorflow.keras.applications import VGG16
 
 # region =========================================== CONSTANTS ===========================================
 
 API_KEY = "710903625f43af5a9bb567f640317ef9ae45b77ee231a59cd6a2665a7c9e768f"
 DATASET = "/content/dataset"
-CSV_HEADERS = ["Image", "MSE", "SSIM", "PSNR"] # "RMSE"
+CSV_HEADERS = ["Image", "MSE", "SSIM", "PSNR"]
 IGNORE = [".DS_Store", "Icon", "Icon?"]
 
 BATCH_SIZE = 50
@@ -132,31 +126,6 @@ def get_dataset(dataset_name, train_size, num_images = None):
 
     return [gray_train, gray_test, colour_train, colour_test]
 
-def concat_datasets(dataset_names, test_size, num_images = None):
-    colour_train_list = []
-    colour_test_list = []
-    colour_val_list = []
-    gray_train_list = []
-    gray_test_list = []
-    gray_val_list = []
-
-    for dataset_name in dataset_names:
-        colour_train, colour_test, colour_val, gray_train, gray_test, gray_val = get_dataset(dataset_name, test_size, num_images)
-        colour_train_list.append(colour_train)
-        colour_test_list.append(colour_test)
-        colour_val_list.append(colour_val)
-        gray_train_list.append(gray_train)
-        gray_test_list.append(gray_test)
-        gray_val_list.append(gray_val)
-
-    colour_train = np.concatenate(colour_train_list)
-    colour_test = np.concatenate(colour_test_list)
-    gray_train = np.concatenate(gray_train_list)
-    gray_test = np.concatenate(gray_test_list)
-
-    return [colour_train, colour_test, colour_val, gray_train, gray_test, gray_val]
-
-
 def plot_images(color, grayscale, predicted=None, save_path=None, show=False):
     num_cols = 3 if type(predicted).__name__ != 'NoneType'  else 2
     fig, axes = plt.subplots(ncols=num_cols, figsize=(15, 15))
@@ -224,60 +193,6 @@ def generate_paths(model: MODELS) -> dict:
         'RESULTS': results_dir,
         'IMAGES': images_dir
     }
-
-def compare(ground_truth, predicted):
-    def mse(imageA, imageB):
-        # the 'Mean Squared Error' between the two images is the sum of the squared difference between the two images
-        mse_error = np.sum((imageA.astype("float") - imageB.astype("float")) ** 2)
-        mse_error /= float(imageA.shape[0] * imageA.shape[1])
-            
-        # return the MSE. The lower the error, the more "similar" the two images are.
-        return mse_error
-    
-    # Import images
-    image1 = cv2.imread(ground_truth)
-    image2 = cv2.imread(predicted, 1)
-
-    # Convert the images to grayscale
-    gray1 = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY)
-    gray2 = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
-
-    # Check for same size and ratio and report accordingly
-    ho, wo, _ = image1.shape
-    hc, wc, _ = image2.shape
-    ratio_orig = ho/wo
-    ratio_comp = hc/wc
-    dim = (wc, hc)
-
-    if round(ratio_orig, 2) != round(ratio_comp, 2):
-        print("\nImages not of the same dimension. Check input.")
-        exit()
-
-    # Resize first image if the second image is smaller
-    elif ho > hc and wo > wc:
-        print("\nResizing original image for analysis...")
-        gray1 = cv2.resize(gray1, dim)
-
-    elif ho < hc and wo < wc:
-        print("\nCompressed image has a larger dimension than the original. Check input.")
-        exit()
-
-    if round(ratio_orig, 2) == round(ratio_comp, 2):
-        mse_value = mse(gray1, gray2)
-        ssim_value = ssim(gray1, gray2)
-        return [mse_value, ssim_value]
-    
-    return []
-
-def perform_cross_val(model, x, y, parameters: dict, cv_fold, checkpoint):
-    scorers = {
-        "ssim": make_scorer(metrics.structural_similarity),
-        "psnr": make_scorer(metrics.peak_signal_noise_ratio)
-    }
-    
-    grid_cv = GridSearchCV(model, parameters, cv=cv_fold, scoring=scorers, refit=False)
-    grid_cv.fit(x, y, epochs=EPOCHS, batch_size=BATCH_SIZE, callbacks=[checkpoint])
-    return grid_cv, pd.DataFrame(grid_cv.cv_results_)
 
 def generator_loss(y_true, y_pred):
     return tf.reduce_mean(tf.square(y_pred - y_true))
