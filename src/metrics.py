@@ -1,6 +1,5 @@
 import os
 import argparse
-import importlib
 from utils import *
 
 def main(path):

@@ -145,8 +145,8 @@ def plot_images(color, grayscale, predicted=None, save_path=None, show=False):
         fig.show()
 
 def get_metrics(ground_truth, colourised):
-    gt_image = io.imread(ground_truth)
-    colorized_image = io.imread(colourised)
+    gt_image = io.imread(ground_truth)[:,:,:3]
+    colorized_image = io.imread(colourised)[:,:,:3]
     
     mse = metrics.mean_squared_error(gt_image, colorized_image)
     ssim = get_ssim(gt_image, colorized_image)
