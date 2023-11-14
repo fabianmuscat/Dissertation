@@ -30,4 +30,4 @@ Please note that the **dataset** folder is not included in this GitHub repositor
 🚀 Happy exploring and colourising images with deep learning techniques! 🎨
 
 
-[![Paper](https://github.com/fabianmuscat/Dissertation/assets/56063935/691418c1-f9a6-4e34-837b-f9d3a364abb5)](https://ieeexplore.ieee.org/document/10278865)
+[![Paper](https://library.iub.edu.bd/sites/default/files/%5Bnode.type%5D/logo/IEEE-XploreDigitalLibraryLogo2.png)](https://ieeexplore.ieee.org/document/10278865)
