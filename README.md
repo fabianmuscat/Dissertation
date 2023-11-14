@@ -28,3 +28,6 @@ Please refer to the official documentation of each framework for installation in
 Please note that the **dataset** folder is not included in this GitHub repository, but you can download it separately using the provided link.
 
 🚀 Happy exploring and colourising images with deep learning techniques! 🎨
+
+
+[![Paper](https://github.com/fabianmuscat/Dissertation/assets/56063935/691418c1-f9a6-4e34-837b-f9d3a364abb5)](https://ieeexplore.ieee.org/document/10278865)
