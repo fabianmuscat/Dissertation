@@ -19,7 +19,7 @@ Please refer to the official documentation of each framework for installation in
 
 ### Folder Hierarchy
 
-- **dataset**: This folder contains the dataset used for training and evaluating the deep learning models. Due to its large size, the dataset is not included in this GitHub repository. You can find and download the dataset from [LINK_TO_DATASET](https://drive.google.com/drive/folders/1-7xU0vw6aWqGdeINUrxrFXF-_exkjl4r?usp=sharing) 📂.
+- **dataset**: This folder contains the dataset used for training and evaluating the deep learning models. Due to its large size, the dataset is not included in this GitHub repository.
 
 - **src**: This folder contains the source code, scripts, notebooks, trained models, and plots used in the dissertation. It is organized into subfolders for better organization and easy access to different components of the project.
 
